@@ -24,7 +24,11 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         // Observa los eventos de navegación
-        mainActivityViewModel.getNavegarARegistro().observe(this, unused -> navegarARegistro());
+        mainActivityViewModel.getNavegarARegistro().observe(this, isEditing -> {
+            Intent intent = new Intent(this, RegistroActivity.class);
+            intent.putExtra("isEditing", isEditing);  // Pasamos si es modo edición o no
+            startActivity(intent);
+        });
 
         // Observa los mensajes de error
         mainActivityViewModel.getMensaje().observe(this, this::mostrarMensajeError);
@@ -37,12 +41,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Acción del botón Registrar
-        binding.btnRegistrar.setOnClickListener(v -> mainActivityViewModel.registrar());
-    }
+        binding.btnRegistrar.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegistroActivity.class);
+            intent.putExtra("isEditing", false);  // Registrar nuevo usuario (campos vacíos)
+            startActivity(intent);
+        });
 
-    private void navegarARegistro() {
-        Intent intent = new Intent(this, RegistroActivity.class);
-        startActivity(intent);
     }
 
     private void mostrarMensajeError(String mensaje) {

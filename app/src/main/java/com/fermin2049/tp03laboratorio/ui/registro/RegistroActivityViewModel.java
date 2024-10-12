@@ -42,16 +42,20 @@ public class RegistroActivityViewModel extends AndroidViewModel {
         return mensajeLiveData;
     }
 
-    public void cargarDatosUsuario() {
-        Usuario usuario = ApiClient.leer(context);
-        if (usuario != null) {
-            usuarioMutableLiveData.setValue(usuario);
-            uriMutableLiveData.setValue(usuario.getImagen());  // Emitimos el Uri si existe
+    public void cargarDatosUsuario(boolean isEditing) {
+        // Lógica para cargar datos según el estado de edición
+        if (isEditing) {
+            Usuario usuario = ApiClient.leer(context);
+            if (usuario != null) {
+                usuarioMutableLiveData.setValue(usuario);
+                uriMutableLiveData.setValue(usuario.getImagen());
+            }
         } else {
-            // Creamos un usuario vacío para evitar null
+            // Crea un usuario vacío para inicializar campos en blanco
             usuarioMutableLiveData.setValue(new Usuario("", "", 0, "", "", null));
         }
     }
+
 
     public void guardarUsuario(String apellido, String nombre, String dni, String email, String password) {
         try {
@@ -59,20 +63,18 @@ public class RegistroActivityViewModel extends AndroidViewModel {
             Usuario usuarioNuevo = new Usuario(nombre, apellido, dnis, email, password, uri);
             boolean guardado = ApiClient.guardar(context, usuarioNuevo);
 
-            String mensaje = guardado ? "Usuario guardado correctamente" : "Error al guardar los datos";
-            mensajeLiveData.setValue(mensaje);
+            mensajeLiveData.setValue(guardado ? "Usuario guardado correctamente" : "Error al guardar los datos");
         } catch (NumberFormatException e) {
             mensajeLiveData.setValue("DNI inválido");
         }
     }
 
-    public void recibirFoto(ActivityResult result) {
-        if (result.getResultCode() == RESULT_OK) {
-            Intent data = result.getData();
-            if (data != null) {
-                uri = data.getData();
-                uriMutableLiveData.setValue(uri);
-            }
-        }
+
+    public void recibirFoto(Uri uri) {
+        this.uri = uri;
+        uriMutableLiveData.setValue(uri);  // Notificar a la vista del nuevo URI
     }
+
+
+
 }

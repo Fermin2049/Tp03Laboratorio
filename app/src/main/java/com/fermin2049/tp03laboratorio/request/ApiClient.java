@@ -46,13 +46,21 @@ public class ApiClient {
 
         try (ObjectInputStream ois = new ObjectInputStream(
                 new BufferedInputStream(new FileInputStream(file)))) {
-            return (Usuario) ois.readObject();
+            Usuario usuario = (Usuario) ois.readObject();
+
+            // Convertimos imagenUri a Uri si no es null
+            if (usuario.getImagenUri() != null) {
+                usuario.setImagen(Uri.parse(usuario.getImagenUri()));
+            }
+
+            return usuario;
         } catch (IOException | ClassNotFoundException e) {
             Toast.makeText(context, "Error al leer usuario: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             return null;
         }
     }
+
 
     // Realizar login
     public static Usuario login(Context context, String mail, String password) {
