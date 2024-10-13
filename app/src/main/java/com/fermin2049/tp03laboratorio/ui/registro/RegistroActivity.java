@@ -3,8 +3,6 @@ package com.fermin2049.tp03laboratorio.ui.registro;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -31,18 +29,9 @@ public class RegistroActivity extends AppCompatActivity {
 
         // Configurar el ActivityResultLauncher al inicio del onCreate()
         arl = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent data = result.getData();
-                        if (data != null) {
-                            Uri uri = data.getData();
-                            // Tomar permiso persistente para el URI seleccionado
-                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            registroActivityViewModel.recibirFoto(uri);
-                        }
-                    }
-                });
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> registroActivityViewModel.manejarResultadoActividad(result.getResultCode(), result.getData())
+        );
 
         // Configurar botones
         binding.btnCargarFoto.setOnClickListener(v -> abrirGaleria());

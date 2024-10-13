@@ -75,6 +75,15 @@ public class RegistroActivityViewModel extends AndroidViewModel {
         uriMutableLiveData.setValue(uri);  // Notificar a la vista del nuevo URI
     }
 
-
+    public void manejarResultadoActividad(int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                // Tomar permiso persistente para el URI seleccionado
+                getApplication().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                recibirFoto(uri);
+            }
+        }
+    }
 
 }
